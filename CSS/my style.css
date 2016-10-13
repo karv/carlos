@@ -1,0 +1,61 @@
+body{
+	-webkit-flex-direction: column;
+	-webkit-justify-content: center;
+	align-items: center;
+	background: black;
+	display: -webkit-flex;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+}
+h2{
+	color: white;
+	text-align: center;
+}
+.btn_action{
+	display: inline-block;
+	margin-top: 8px;
+	width: 175px;
+}
+#opcionesPreviasAlJuego div:not(.btn){
+	color:white;
+	text-align: right;
+	width:175px;
+}
+#juego{
+	font-size: 0;
+}
+#tablero, #mano{
+	vertical-align: middle;
+}
+#tablero{
+	background: saddlebrown;
+}
+#mano{
+	background: gray;
+	display: inline-block;
+	position: relative;
+}
+.mazo{
+	background-size: 100% 100%;
+	position:absolute;
+	text-align: center;
+	color:white;
+	font-size: 20px;
+}
+.cantidadDeCartas{
+	background-color: white;
+	color:orange;
+}
+#container{
+	position: relative;
+	width: 0;
+	display: inline-block;
+	vertical-align: middle;
+}
+.unidad{
+	background-size: 100% 100%;
+	position:absolute;
+	transition: 2s all;
+}

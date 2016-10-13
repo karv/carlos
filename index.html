@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="CSS/Kongregate style.css">
+	<link rel="stylesheet" type="text/css" href="CSS/my style.css">
+	<script type="text/javascript" src='script.js'></script>
+</head>
+<body>
+	<div id='menuPrincipal'>
+		<h2>Título</h2>
+		<div class='btn btn_action btn_wide' id='botonJugar'>Jugar</div>
+		<div class='btn btn_action btn_wide'>Otro botón</div>
+	</div>
+	<div id='opcionesPreviasAlJuego' style="display: none;">
+		<div>
+			<span>Número de columnas:</span>
+			<select id='selectColumnas'></select>
+		</div>
+		<div>
+			<span>Número de filas:</span>
+			<select id='selectFilas'></select>
+		</div>
+		<div class='btn btn_action btn_wide' id='botonComenzarPartida'>Comenzar partida</div>
+	</div>
+	<div id='juego' style="display: none;">
+		<div id='container'></div>
+		<canvas id='tablero'>Error: your browser doesn't support the canvas element.</canvas>
+		<div id='mano'></div>
+	</div>
+</body>
