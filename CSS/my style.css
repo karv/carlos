@@ -37,7 +37,7 @@ h2{
 	display: inline-block;
 	position: relative;
 }
-.mazo{
+.mazo, .carta{
 	background-size: 100% 100%;
 	position:absolute;
 	text-align: center;
