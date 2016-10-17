@@ -6,6 +6,7 @@ body{
 	display: -webkit-flex;
 	display: flex;
 	flex-direction: column;
+	font-size: 100%;
 	justify-content: center;
 	text-align: center;
 }
@@ -13,15 +14,15 @@ h2{
 	color: white;
 	text-align: center;
 }
-.btn_action{
+.btn_action:not(.botonEditor){
 	display: inline-block;
 	margin-top: 8px;
-	width: 175px;
+	width: 220px;
 }
 #opcionesPreviasAlJuego div:not(.btn){
 	color:white;
 	text-align: right;
-	width:175px;
+	width:220px;
 }
 #juego{
 	font-size: 0;
@@ -48,6 +49,9 @@ h2{
 	background-color: white;
 	color:orange;
 }
+.absolute, .cartaDelMazo{
+	position: absolute;
+}
 #container{
 	position: relative;
 	width: 0;
@@ -58,4 +62,40 @@ h2{
 	background-size: 100% 100%;
 	position:absolute;
 	transition: 2s all;
+}
+#feature{
+	width:100%;
+	text-align: left;
+}
+#feature>div{
+	display:block;
+}
+#mazo{
+	position:relative;
+}
+#browser_sidebar{
+	height:auto;
+}
+.browser_categories, .man{
+	height:100%;
+}
+.man li{
+	display: inline-block;
+}
+#category #browser_sidebar, #category .browser_categories{
+	width:auto;
+}
+#bodyCartas{
+	color:white;
+	font-size: 75%;
+}
+.cartaEnEditor{
+	padding:4px 0;
+	border-top:2px solid #333;
+}
+.botonEditor{
+	margin:0 4px;
+}
+#cartas{
+	overflow: auto;
 }

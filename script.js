@@ -1,4 +1,5 @@
 const BANDO_JUGADOR='blue';
+const CARTAS_POR_COLUMNA=13;
 const CELL_BORDER_COLOR='black';
 const CELL_BORDER_WIDTH=1;
 const DIAMETRO_MINIMO_UNIDAD=18;
@@ -9,6 +10,27 @@ const PADDING=2;
 const STYLESHEET=document.createElement('style');
 const TAMAÑO_MANO=5;
 const TAMAÑO_MINIMO_CELL=DIAMETRO_MINIMO_UNIDAD+(PADDING+CELL_BORDER_WIDTH)*2
+const TIPOS_DE_CARTAS=new Set().
+	add({
+		nombre:'Move',
+		funcion:mover,
+		tipo:'accion',
+		title:'Moves a unit a number of cells equal to the unit\'s movement stat, in a vertical or horizontal line.',
+		backgroundImage:'url(https://www.educima.com/imagen-caminar-dm14822.jpg)',
+		numeroEnMazo:parseInt(window.localStorage.carlosMoveEnMazo)||4,
+		funcionAgregar:function(){return true;},
+		funcionSacar:funcionSacar
+	}).
+	add({
+		nombre:'Attack',
+		funcion:atacar,
+		tipo:'accion',
+		title:'Attacks an enemy with one of your units. The damage done is equal to your unit\'s attack stat. The enemy must be in your unit\'s range.',
+		backgroundImage:'url(http://misdibujos.de/wp-content/uploads/2015/12/dibujos-de-espadas-4.jpg)',
+		numeroEnMazo:parseInt(window.localStorage.carlosAttackEnMazo)||4,
+		funcionAgregar:function(){return true;},
+		funcionSacar:funcionSacar
+	});
 const TIPOS_DE_UNIDADES=[
 	{nombre:'vacio'},
 	{nombre:'test', ataque:3, movimiento:5, vida:10, lealtad:10, rango:1, curar:1, image:'http://vignette2.wikia.nocookie.net/about-stick-war-game/images/a/a9/Stick_Swordwrath.jpg/revision/latest/scale-to-width-down/440?cb=20130402214823'}
@@ -17,15 +39,19 @@ const WIDTH=320;
 const WIDTH_MANO=54;
 const WIDTH_TABLERO=WIDTH-WIDTH_MANO;
 
+const MAX_WIDTH=Math.floor(WIDTH_TABLERO/(TAMAÑO_MINIMO_CELL));
+const MAX_HEIGHT=Math.floor(HEIGHT_TABLERO/(TAMAÑO_MINIMO_CELL));
 const PROPIEDADES_CARTAS={
 	BACKSIDE:'https://rfclipart.com/image/big/ce-7c-03/pattern-on-backside-of-playing-card-Download-Royalty-free-Vector-File-EPS-89501.jpg',
 	HEIGHT:(WIDTH_MANO-PADDING*2)*1.5,
+	VISIBILIDAD:HEIGHT_MANO/24,
 	WIDTH:WIDTH_MANO-PADDING*2
 }
-const MAX_WIDTH=Math.floor(WIDTH_TABLERO/(TAMAÑO_MINIMO_CELL));
-const MAX_HEIGHT=Math.floor(HEIGHT_TABLERO/(TAMAÑO_MINIMO_CELL));
+
+const CARTAS_POR_FILA=Math.floor((WIDTH-PADDING)/(PROPIEDADES_CARTAS.WIDTH+PADDING));
 
 var accion; //esto lo tengo que arreglar, pero por ahora sirve
+var en;
 var ladoCelda;
 var manos;
 var mazos;
@@ -34,6 +60,60 @@ var unidades;
 var unidadSeleccionada;
 
 function onload(){
+	const HEIGHT_MAZO=PROPIEDADES_CARTAS.VISIBILIDAD*CARTAS_POR_COLUMNA+PROPIEDADES_CARTAS.HEIGHT+PADDING*2;
+	document.getElementById('mazo').style.height=HEIGHT_MAZO+'px';
+	document.getElementById('cartas').style.height=HEIGHT-HEIGHT_MAZO+'px';
+	for(var tipo of TIPOS_DE_CARTAS){
+		var div=document.createElement('div');
+		div.objeto=tipo;
+		div.className='cartaEnEditor';
+		var descripcion=document.createElement('div');
+		descripcion.innerHTML='<h3>'+tipo.nombre+'</h3>'+tipo.title;
+		div.appendChild(descripcion);
+		var botones=document.createElement('div');
+		var agregar=document.createElement('div');
+		agregar.className='btn btn_action botonEditor';
+		agregar.innerText='Add';
+		tipo.botonAgregar=agregar;
+		agregar.onclick=function(){
+			if(this.enabled){
+				var tipo=arguments.callee.tipo;
+				tipo.numeroEnMazo++;
+				window.localStorage['carlos'+tipo.nombre+'EnMazo']=tipo.numeroEnMazo;
+				actualizarBotonesEditor();
+			}
+		}
+		agregar.onclick.tipo=tipo;
+		var sacar=document.createElement('div');
+		sacar.className='btn btn_action botonEditor';
+		sacar.innerText='Take out';
+		tipo.botonSacar=sacar;
+		sacar.onclick=function(){
+			if(this.enabled){
+				var tipo=arguments.callee.tipo;
+				tipo.numeroEnMazo--;
+				window.localStorage['carlos'+tipo.nombre+'EnMazo']=tipo.numeroEnMazo;
+				actualizarBotonesEditor();
+			}
+		}
+		sacar.onclick.tipo=tipo;
+		botones.appendChild(agregar);
+		botones.appendChild(sacar);
+		div.appendChild(botones);
+		document.getElementById('bodyCartas').appendChild(div);
+	}
+	mazos={[BANDO_JUGADOR]:[]};
+	for(i=0; i<CARTAS_POR_FILA; i++){
+		for(j=0; j<CARTAS_POR_COLUMNA; j++){
+			var div=document.createElement('div');
+			div.className='cartaDelMazo';
+			div.style.left=PADDING+i*(PADDING+PROPIEDADES_CARTAS.WIDTH)+'px'
+			div.style.top=PADDING+j*(PROPIEDADES_CARTAS.VISIBILIDAD)+'px'
+			document.getElementById('mazo').appendChild(div);
+		}
+	}
+	actualizarMazo(true);
+	actualizarBotonesEditor();
 	document.body.style.width=WIDTH+'px';
 	document.body.style.height=HEIGHT+'px';
 	document.head.appendChild(STYLESHEET);
@@ -47,7 +127,8 @@ function onload(){
 		option.innerText=i;
 		document.getElementById('selectFilas').appendChild(option);
 	}
-	document.getElementById('botonJugar').addEventListener('click', function(){mostrar(document.getElementById('opcionesPreviasAlJuego'))});
+	document.getElementById('botonJugar').addEventListener('click', function(){mostrar('opcionesPreviasAlJuego')});
+	document.getElementById('botonEditarMazo').addEventListener('click', function(){mostrar('feature')});
 	document.getElementById('botonComenzarPartida').addEventListener('click', comenzarPartida);
 	STYLESHEET.innerHTML=
 		'#mano{'+
@@ -71,20 +152,19 @@ function onload(){
 		'	50%  {border: '+PADDING+'px solid #7f7fff;}'+
 		'	100% {border: '+PADDING+'px solid #0000ff;}'+
 		'}';
-	for(var i=0; i<=1; i++){
+	for(i=0; i<=1; i++){
 		var mazo=document.createElement('div');
 		mazo.className='mazo';
 		mazo.style.top=HEIGHT_MANO/2+(i?-PROPIEDADES_CARTAS.HEIGHT-PADDING:PADDING)+'px';
 		document.getElementById('mano').appendChild(mazo);
 	}
-	for(var i=0; i<TAMAÑO_MANO; i++){
+	for(i=0; i<TAMAÑO_MANO; i++){
 		var divEnemigo=document.createElement('div');
 		var divJugador=document.createElement('div');
-		divEnemigo.className='red';
-		divEnemigo.style.position=divJugador.style.position='absolute';
-		divEnemigo.style.top=PADDING+i*20+'px';
+		divEnemigo.className='red absolute';
+		divEnemigo.style.top=PADDING+i*PROPIEDADES_CARTAS.VISIBILIDAD+'px';
 		divEnemigo.style.zIndex=divEnemigo.baseZIndex=i;
-		divJugador.className=BANDO_JUGADOR;
+		divJugador.className=BANDO_JUGADOR+' absolute';
 		divJugador.onmouseout=onmouseoutCarta;
 		divJugador.onmouseover=onmouseoverCarta;
 		divJugador.style.bottom=PROPIEDADES_CARTAS.HEIGHT+PADDING+i*20+'px';
@@ -92,6 +172,54 @@ function onload(){
 		document.getElementById('mano').appendChild(divEnemigo);
 		document.getElementById('mano').appendChild(divJugador);
 	}
+}
+
+function onkeydown(event){
+	key=event.keyCode?event.keyCode:event.charCode;
+	console.log('Se presionó la tecla con keyCode: '+key);
+	//si presionás la D mientras estás jugando...
+	if(key===68&&en==='juego') descartarMano(BANDO_JUGADOR);
+	//si presionás ESC...
+	if(key===27) mostrar('menuPrincipal');
+}
+
+function descartarMano(bando){
+	manos[bando]=[];
+	for(i=0; i<5; i++) levantarCarta(bando);
+}
+
+function actualizarBotonesEditor(){
+	for(var tipo of TIPOS_DE_CARTAS){
+		if(tipo.funcionAgregar()) enable(tipo.botonAgregar);
+		else disable(tipo.botonAgregar);
+		if(tipo.funcionSacar()) enable(tipo.botonSacar);
+		else disable(tipo.botonSacar);
+	}
+	actualizarMazo(true);
+}
+
+function enable(elemento){
+	elemento.enabled=true;
+	elemento.style.opacity=1;
+}
+
+function disable(elemento){
+	elemento.enabled=false;
+	elemento.style.opacity=0.5;
+}
+
+function funcionSacar(){
+	return this.numeroEnMazo&&mazos[BANDO_JUGADOR].length;
+}
+
+function actualizarMazo(enEditor){
+	for(var i=mazos[BANDO_JUGADOR].length-1; i>=0; i--){
+		mazos[BANDO_JUGADOR][i].div.remove();
+	}
+	mazos[BANDO_JUGADOR]=[];
+	var mazo=mazos[BANDO_JUGADOR];
+	for(var tipo of TIPOS_DE_CARTAS) for(var i=0; i<tipo.numeroEnMazo; i++) mazo.push(new Carta(tipo, BANDO_JUGADOR, enEditor));
+	for(i=0; i<mazo.length; i++) document.getElementsByClassName('cartaDelMazo')[i].appendChild(mazo[i].div);
 }
 
 function onmouseoverCarta(){
@@ -102,9 +230,10 @@ function onmouseoutCarta(){
 	this.style.zIndex=this.baseZIndex;
 }
 
-function mostrar(elementoDelBody){
+function mostrar(id){
 	for(var i=document.body.children.length-1; i>=0; i--) document.body.children[i].style.display='none';
-	elementoDelBody.style.display=null;
+	document.getElementById(id).style.display=null;
+	en=id;
 }
 
 function Unidad(tipo, x, y, bando){
@@ -138,6 +267,8 @@ function redimensionarTablero(width, height){
 			CTX.strokeRect(j*ladoCelda, i*ladoCelda, ladoCelda, ladoCelda);
 		}
 	}
+	window.localStorage.carlosWidth=width;
+	window.localStorage.carlosHeight=height;
 }
 
 function shuffle(array) {
@@ -159,7 +290,10 @@ function shuffle(array) {
 function comenzarPartida(){
 	const DIVS_MAZOS=document.getElementsByClassName('mazo');
 	redimensionarTablero(document.getElementById('selectColumnas').value, document.getElementById('selectFilas').value);
-	mostrar(document.getElementById('juego'));
+	mostrar('juego');
+	//test
+	mazos.red=shuffle([]);
+	shuffle(mazos[BANDO_JUGADOR]);
 	for(var i=unidades.length-1; i>=0; i--){
 		for(var j=unidades[i].length-1; j>=0; j--){
 			var unidad=unidades[i][j];
@@ -179,29 +313,6 @@ function comenzarPartida(){
 			}
 		}
 	}
-	mazos={
-		[BANDO_JUGADOR]:shuffle([
-			new Carta(mover, BANDO_JUGADOR),
-			new Carta(mover, BANDO_JUGADOR),
-			new Carta(mover, BANDO_JUGADOR),
-			new Carta(mover, BANDO_JUGADOR),
-			new Carta(atacar, BANDO_JUGADOR),
-			new Carta(atacar, BANDO_JUGADOR),
-			new Carta(atacar, BANDO_JUGADOR),
-			new Carta(atacar, BANDO_JUGADOR),
-			new Carta(atacar, BANDO_JUGADOR)
-		]),
-		red:shuffle([
-			new Carta(mover, 'red'),
-			new Carta(mover, 'red'),
-			new Carta(mover, 'red'),
-			new Carta(atacar, 'red'),
-			new Carta(atacar, 'red'),
-			new Carta(atacar, 'red'),
-			new Carta(atacar, 'red'),
-			new Carta(atacar, 'red')
-		])
-	};
 	manos={[BANDO_JUGADOR]:[], red:[]};
 	DIVS_MAZOS[0].innerHTML='<span class="cantidadDeCartas">'+mazos[BANDO_JUGADOR].length+'</span>';
 	DIVS_MAZOS[1].innerHTML='<span class="cantidadDeCartas">'+mazos.red.length+'</span>';
@@ -330,19 +441,15 @@ function remove(carta){
 	levantarCarta(turno);
 }
 
-function pocionDeVida(){
-	
-}
-
 function atacar(){
 	activarSeleccionDeUnidades(function(unidad){return unidad.ataque>0&&unidad.bando===BANDO_JUGADOR;});
 }
 
-function Carta(funcion, bando){
-	var onclick=funcion;
+function Carta(tipo, bando, enEditor){
+	var onclick=tipo.funcion;
 	this.div=document.createElement('div');
 	this.div.onclick=function(){
-		if(turno===BANDO_JUGADOR){
+		if(turno===BANDO_JUGADOR&&en==='juego'){
 			accion=onclick;
 			cartaSeleccionada=this;
 			unidadSeleccionada=null; //esto lo tengo que arreglar, pero por ahora sirve
@@ -364,20 +471,8 @@ function Carta(funcion, bando){
 	};
 	this.div.className='carta';
 	this.div.objeto=this;
-	switch(funcion){
-		case mover:
-			this.div.style.backgroundImage='url(https://www.educima.com/imagen-caminar-dm14822.jpg)';
-			this.div.title='Moves a unit a number of cells equal to the unit\'s movement stat, in a vertical or horizontal line.'
-			break;
-		case atacar:
-			this.div.style.backgroundImage='url(http://misdibujos.de/wp-content/uploads/2015/12/dibujos-de-espadas-4.jpg)';
-			this.div.title='Attacks an enemy with one of your units. The damage done is equal to your unit\'s attack stat. The enemy must be in your unit\'s range.'
-			break;
-		default:
-			this.div.style.backgroundImage='url(http://identifyla.lsu.edu/peopleimages/noimage.jpg)';
-			this.div.title='Unknown card.'
-			break;
-	}
+	this.div.style.backgroundImage=tipo.backgroundImage;
+	this.div.title=tipo.title;
 	if(bando!==BANDO_JUGADOR){
 		this.div.style.backgroundImage='url('+PROPIEDADES_CARTAS.BACKSIDE+')';
 		this.div.title='';
@@ -412,4 +507,14 @@ function levantarCarta(bando){
 	//turno=turno===BANDO_JUGADOR?'red':BANDO_JUGADOR;
 }
 
+function filtrarCartas(funcion){
+	const cartas=document.getElementsByClassName('cartaEnEditor');
+	for(var i=cartas.length-1; i>=0; i--){
+		var carta=cartas[i];
+		if(funcion(carta.objeto)) carta.style.display='';
+		else carta.style.display='none';
+	}
+}
+
 window.addEventListener('load', onload);
+window.addEventListener('keydown', onkeydown);

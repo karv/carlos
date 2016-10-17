@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <head>
 	<meta charset="utf-8">
-	<link rel="stylesheet" type="text/css" href="CSS/Kongregate style.css">
+	<link rel="stylesheet" type="text/css" href="CSS/Kongregate style 2.css">
 	<link rel="stylesheet" type="text/css" href="CSS/my style.css">
 	<script type="text/javascript" src='script.js'></script>
 </head>
-<body>
+<body id='category' class='generic'>
 	<div id='menuPrincipal'>
 		<h2>Título</h2>
 		<div class='btn btn_action btn_wide' id='botonJugar'>Jugar</div>
-		<div class='btn btn_action btn_wide'>Otro botón</div>
+		<div class='btn btn_action btn_wide' id='botonEditarMazo'>Editar mazo</div>
 	</div>
 	<div id='opcionesPreviasAlJuego' style="display: none;">
 		<div>
@@ -26,5 +26,32 @@
 		<div id='container'></div>
 		<canvas id='tablero'>Error: your browser doesn't support the canvas element.</canvas>
 		<div id='mano'></div>
+	</div>
+	<div id='feature' style="display: none">
+		<div id='mazo'></div>
+		<div id='cartas'>
+			<div id='browser_sidebar'>
+				<div class='browser_categories'>
+					<ul class='man'>
+						<li>
+							<a href="#" onclick='filtrarCartas(function(carta){return true;})'>All cards</a>
+						</li>
+						<li>
+							<a href="#" onclick='filtrarCartas(function(carta){return carta.tipo==="accion";})'>Actions</a>
+						</li>
+						<li>
+							<a href="#" onclick='filtrarCartas(function(carta){return carta.tipo==="consumible";})'>Consumables</a>
+						</li>
+						<li>
+							<a href="#" onclick='filtrarCartas(function(carta){return carta.tipo==="permanente";})'>Permanents</a>
+						</li>
+						<li>
+							<a href="#" onclick='filtrarCartas(function(carta){return carta.tipo==="hechizo";})'>Spells</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div id='bodyCartas'></div>
+		</div>
 	</div>
 </body>
