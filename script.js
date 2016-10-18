@@ -16,7 +16,7 @@ const TIPOS_DE_CARTAS=new Set().
 		funcion:mover,
 		tipo:'accion',
 		title:'Moves a unit a number of cells equal to the unit\'s movement stat, in a vertical or horizontal line.',
-		backgroundImage:'url(https://www.educima.com/imagen-caminar-dm14822.jpg)',
+		backgroundImage:'url(images/move.png)',
 		numeroEnMazo:parseInt(window.localStorage.carlosMoveEnMazo)||4,
 		funcionAgregar:function(){return true;},
 		funcionSacar:funcionSacar
@@ -26,14 +26,14 @@ const TIPOS_DE_CARTAS=new Set().
 		funcion:atacar,
 		tipo:'accion',
 		title:'Attacks an enemy with one of your units. The damage done is equal to your unit\'s attack stat. The enemy must be in your unit\'s range.',
-		backgroundImage:'url(http://misdibujos.de/wp-content/uploads/2015/12/dibujos-de-espadas-4.jpg)',
+		backgroundImage:'url(images/attack.png)',
 		numeroEnMazo:parseInt(window.localStorage.carlosAttackEnMazo)||4,
 		funcionAgregar:function(){return true;},
 		funcionSacar:funcionSacar
 	});
 const TIPOS_DE_UNIDADES=[
 	{nombre:'vacio'},
-	{nombre:'test', ataque:3, movimiento:5, vida:10, lealtad:10, rango:1, curar:1, image:'http://vignette2.wikia.nocookie.net/about-stick-war-game/images/a/a9/Stick_Swordwrath.jpg/revision/latest/scale-to-width-down/440?cb=20130402214823'}
+	{nombre:'test', ataque:3, movimiento:5, vida:10, lealtad:10, rango:1, curar:1, image:'images/unit1.png'}
 ];
 const WIDTH=320;
 const WIDTH_MANO=54;
@@ -127,6 +127,8 @@ function onload(){
 		option.innerText=i;
 		document.getElementById('selectFilas').appendChild(option);
 	}
+	document.getElementById('selectColumnas').value=window.localStorage.carlosWidth;
+	document.getElementById('selectFilas').value=window.localStorage.carlosHeight;
 	document.getElementById('botonJugar').addEventListener('click', function(){mostrar('opcionesPreviasAlJuego')});
 	document.getElementById('botonEditarMazo').addEventListener('click', function(){mostrar('feature')});
 	document.getElementById('botonComenzarPartida').addEventListener('click', comenzarPartida);
