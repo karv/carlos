@@ -33,8 +33,11 @@ const TIPOS_DE_CARTAS=new Set().
 	});
 const TIPOS_DE_UNIDADES=[
 	{nombre:'vacio'},
-	{nombre:'test', ataque:3, movimiento:5, vida:10, lealtad:10, rango:1, curar:1, image:'images/unit1.png'}
+	{nombre:'test', ataque:3, movimiento:5, vida:10, lealtad:10, rango:1, curar:1, image:'unit1.png'}
 ];
+
+const IMAGES_FOLDER = 'images/';
+
 const WIDTH=320;
 const WIDTH_MANO=54;
 const WIDTH_TABLERO=WIDTH-WIDTH_MANO;
@@ -306,10 +309,10 @@ function comenzarPartida(){
 				div.className='unidad';
 				div.style.left=j*ladoCelda+CELL_BORDER_WIDTH+'px';
 				div.style.top=i*ladoCelda+CELL_BORDER_WIDTH-document.getElementById('tablero').height/2+'px';
-				div.style.width=ladoCelda-(PADDING+CELL_BORDER_WIDTH)*2+'px';
-				div.style.height=ladoCelda-(PADDING+CELL_BORDER_WIDTH)*2+'px';
+				div.style.width=ladoCelda-(CELL_BORDER_WIDTH)*2+'px';
+				div.style.height=ladoCelda-(CELL_BORDER_WIDTH)*2+'px';
 				div.style.border=PADDING+'px solid '+unidad.bando;
-				div.style.backgroundImage='url('+unidad.image+')';
+				div.style.backgroundImage='url('+IMAGES_FOLDER + unidad.bando+'-'+unidad.image+')';
 				actualizarTitle(unidad);
 				document.getElementById('container').appendChild(div);
 			}
