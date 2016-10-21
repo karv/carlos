@@ -2,7 +2,7 @@ body{
 	-webkit-flex-direction: column;
 	-webkit-justify-content: center;
 	align-items: center;
-	background: black;
+	background: #191970;
 	display: -webkit-flex;
 	display: flex;
 	flex-direction: column;
@@ -24,13 +24,13 @@ h2{
 	text-align: right;
 	width:220px;
 }
-#juego{
+#juego, #editorDeFormaciones{
 	font-size: 0;
 }
-#tablero, #mano{
+#tablero, #tableroDeEditor, #mano{
 	vertical-align: middle;
 }
-#tablero{
+#tablero, #tableroDeEditor{
 	background: saddlebrown;
 }
 #mano{
@@ -43,16 +43,16 @@ h2{
 	position:absolute;
 	text-align: center;
 	color:white;
-	font-size: 20px;
 }
 .cantidadDeCartas{
 	background-color: white;
-	color:orange;
+	color: orange;
+	font-size: 20px;
 }
 .absolute, .cartaDelMazo{
 	position: absolute;
 }
-#container{
+#container, #containerDeEditor{
 	position: relative;
 	width: 0;
 	display: inline-block;
@@ -98,4 +98,9 @@ h2{
 }
 #cartas{
 	overflow: auto;
+}
+#unidadesDisponibles>div{
+	background-size: 100% 100%;
+	display: inline-block;
+	position:relative;
 }

@@ -7,7 +7,7 @@
 </head>
 <body id='category' class='generic'>
 	<div id='menuPrincipal'>
-		<h2>Título</h2>
+		<h2>Carlos</h2>
 		<div class='btn btn_action btn_wide' id='botonJugar'>Jugar</div>
 		<div class='btn btn_action btn_wide' id='botonEditarMazo'>Editar mazo</div>
 	</div>
@@ -20,12 +20,18 @@
 			<span>Número de filas:</span>
 			<select id='selectFilas'></select>
 		</div>
-		<div class='btn btn_action btn_wide' id='botonComenzarPartida'>Comenzar partida</div>
+		<div class='btn btn_action btn_wide' id='botonEditarFormacion'>Editar formación</div>
 	</div>
 	<div id='juego' style="display: none;">
 		<div id='container'></div>
 		<canvas id='tablero'>Error: your browser doesn't support the canvas element.</canvas>
 		<div id='mano'></div>
+	</div>
+	<div id='editorDeFormaciones' style="display: none">
+		<div id='containerDeEditor'></div>
+		<canvas id='tableroDeEditor' ondrop="drop(event)" ondragover="allowDrop(event)">Error: your browser doesn't support the canvas element.</canvas>
+		<div id='unidadesDisponibles'></div>
+		<div class='btn btn_action btn_wide' id='botonComenzarPartida'>Comenzar partida</div>
 	</div>
 	<div id='feature' style="display: none">
 		<div id='mazo'></div>
