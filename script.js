@@ -247,7 +247,7 @@ function activarSeleccionDeUnidades(funcion){
 						unidad=this.unidad;
 						if(accion===atacar){
 							remove(cartaSeleccionada);
-							daño=Math.pow(unidad.x-unidadSeleccionada.x, 2)+Math.pow(unidad.y-unidadSeleccionada.y, 2)<4?unidad.ataque:unidad.ataqueDeRango;
+							daño=Math.pow(unidad.x-unidadSeleccionada.x, 2)+Math.pow(unidad.y-unidadSeleccionada.y, 2)<4?unidadSeleccionada.ataque:unidadSeleccionada.ataqueDeRango;
 							unidad.vida-=daño;
 							if(unidad.vida<=0){
 								unidad.div.remove();
@@ -290,8 +290,8 @@ function actualizarTitle(unidad){
 		(unidad.ataqueDeRango?'Attack: '+unidad.ataqueDeRango+'\n':'')+
 		'Range: '+unidad.rango+'\n'+
 		'Movement: '+unidad.movimiento+'\n'+
-		unidad.tipo.descripcion+'\n'+
-		(unidad.preach?'This unit cannot use cards.':'');
+		unidad.tipo.descripcion+
+		(unidad.preach?'\nThis unit cannot use cards.':'');
 }
 
 function allowDrop(event){
@@ -401,8 +401,7 @@ function crearDivDeUnidad(unidad, tablero){
 }
 
 function descartarMano(bando){
-	manos[bando]=[];
-	for(i=0; i<5; i++) levantarCarta(bando);
+	for(var carta of manos[bando]) remove(carta);
 	pasarTurno();
 }
 
@@ -518,8 +517,7 @@ function levantarCarta(bando){
 		}
 		DIV_MAZO.innerHTML='<span class="cantidadDeCartas">'+mazosTemporales[bando].length+'</span>';
 	}
-	//una función poco obvia de la siguiente línea es ordenar las cartas
-	for(var i=0; i<manos[bando].length; i++) document.getElementsByClassName(bando)[i].appendChild(manos[bando][i]);
+	ordenarMano(bando);
 }
 
 function mostrar(id){
@@ -655,7 +653,7 @@ function onload(){
 		'@keyframes '+BANDO_JUGADOR+'{'+
 		'	0%   {border: '+PADDING+'px solid '+BANDO_JUGADOR+';}'+
 		'	50%  {border: '+PADDING+'px solid #ffffff;}'+
-		'	100% {border: '+PADDING+'px solid '+BANDO_OPONENTE+';}'+
+		'	100% {border: '+PADDING+'px solid '+BANDO_JUGADOR+';}'+
 		'}';
 	for(i=0; i<=1; i++){
 		var div=document.createElement('div');
@@ -687,6 +685,10 @@ function onmouseoutCarta(){
 
 function onmouseoverCarta(){
 	this.style.zIndex=9;
+}
+
+function ordenarMano(bando){
+	for(var i=0; i<manos[bando].length; i++) document.getElementsByClassName(bando)[i].appendChild(manos[bando][i]);
 }
 
 function pasarTurno(){
@@ -736,6 +738,7 @@ function shuffle(array) {
 
 function Unidad(tipo, x, y, bando){
 	this.ataque=tipo.ataque;
+	this.ataqueDeRango=tipo.ataqueDeRango;
 	this.bando=bando;
 	this.lealtad=tipo.lealtad;
 	this.movimiento=tipo.movimiento;
