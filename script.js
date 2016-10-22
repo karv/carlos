@@ -426,6 +426,7 @@ function drop(event){
 	var unidad=new Unidad(TIPOS_DE_UNIDADES[parseInt(tipo)], x, y, BANDO_JUGADOR);
 	const DIV=crearDivDeUnidad(unidad, 'DeEditor')
 	DIV.ondrop=function(event){
+		formacion.splice(formacion.indexOf(this.unidad), 1);
 		this.remove();
 		drop(event);
 	}
@@ -713,6 +714,7 @@ function redimensionarTablero(tablero, width, height){
 }
 
 function remove(carta){
+	console.log(mazosTemporales[BANDO_JUGADOR], manos[BANDO_JUGADOR])
 	manos[BANDO_JUGADOR].splice(manos[BANDO_JUGADOR].indexOf(carta), 1);
 	manos[BANDO_OPONENTE].splice(manos[BANDO_OPONENTE].indexOf(carta), 1);
 	carta.remove();
