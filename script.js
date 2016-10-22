@@ -345,7 +345,10 @@ function Carta(tipo, bando){
 		this.div.onclick=null;
 	}
 	this.bando=bando;
+	this.id=Carta.id;
+	Carta.id++;
 }
+Carta.id=0;
 
 function comenzarPartida(){
 	const WIDTH=parseInt(document.getElementById('selectColumnas').value);
@@ -367,7 +370,6 @@ function comenzarPartida(){
 		var unidad=new Unidad(template.tipo, template.x, template.y+HEIGHT-2, template.bando);
 		var div=crearDivDeUnidad(unidad, '');
 		document.getElementById('container').appendChild(div);
-		console.log(template.y+HEIGHT-2, template.y, HEIGHT)
 		unidades[template.y+HEIGHT-2][template.x]=unidad
 	}
 	mostrar('juego');
@@ -401,7 +403,7 @@ function crearDivDeUnidad(unidad, tablero){
 }
 
 function descartarMano(bando){
-	for(var carta of manos[bando]) remove(carta);
+	for(var carta of manos[bando].slice(0)) remove(carta);
 	pasarTurno();
 }
 
@@ -512,7 +514,7 @@ function levantarCarta(bando){
 	if(DIV_MAZO.innerText>0){
 		const mazo=mazosTemporales[bando];
 		if(mazo.length){
-			const carta=mazo.pop().div;
+			const carta=mazosTemporales[bando].pop().div;
 			document.getElementById('mano').appendChild(carta);
 			manos[bando].push(carta);
 		}
@@ -550,7 +552,6 @@ function moverA(x, y){
 
 function onkeydown(event){
 	key=event.keyCode?event.keyCode:event.charCode;
-	console.log('Se presionó la tecla con keyCode: '+key);
 	//si presionás la D mientras estás jugando...
 	if(key===68&&en==='juego') descartarMano(BANDO_JUGADOR);
 	//si presionás ESC...
@@ -714,7 +715,6 @@ function redimensionarTablero(tablero, width, height){
 }
 
 function remove(carta){
-	console.log(mazosTemporales[BANDO_JUGADOR], manos[BANDO_JUGADOR])
 	manos[BANDO_JUGADOR].splice(manos[BANDO_JUGADOR].indexOf(carta), 1);
 	manos[BANDO_OPONENTE].splice(manos[BANDO_OPONENTE].indexOf(carta), 1);
 	carta.remove();
